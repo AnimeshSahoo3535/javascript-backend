@@ -183,7 +183,7 @@ const refreshAccessToken = asynchandler(async (req, res) => {
             incomingRefreshToken,
             process.env.REFRESH_TOKEN_SECRET
         )
-        const user = User.findById(decodedToken?._id);
+        const user = await User.findById(decodedToken?._id);
 
         if (!user) {
             throw new ApiError(401, "Invalid refresh token")
@@ -223,7 +223,7 @@ const refreshAccessToken = asynchandler(async (req, res) => {
 
 const changeCurrentPassword = asynchandler(async (req, res) => {
     const { oldPassword, newPassword } = req.body
-    const user = User.findById(req.user?._id);
+    const user = await User.findById(req.user?._id);
 
     const isPasswordCorrect = user.isPasswordCorrect(oldPassword);
     if (!isPasswordCorrect) {
@@ -256,7 +256,7 @@ const updateAccountDetails = asynchandler(async (req, res) => {
 
         throw new ApiError(400, "All fields are required")
     }
-    const user = User.findByIdAndUpdate(
+    const user =await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set: {
@@ -287,7 +287,7 @@ const updateUserAvatar = asynchandler(async (req, res) => {
         throw new ApiError(400, "Error while uploading on avatar")
     }
 
-    const user = User.findByIdAndUpdate(
+    const user =await User.findByIdAndUpdate(
         req.user._id,
         {
             $set: {
@@ -317,7 +317,7 @@ const  updateUserCoverImage = asynchandler(async (req, res) => {
         throw new ApiError(400, "Error while uploading on coverImage")
     }
 
-    const user = User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
         req.user._id,
         {
             $set: {

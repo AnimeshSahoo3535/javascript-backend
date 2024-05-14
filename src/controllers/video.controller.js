@@ -12,7 +12,7 @@ const getAllVideos = asynchandler(async (req, res) => {
     //TODO: get all videos based on query, sort, pagination
 
     const offset = (page - 1) * limit;
-   try {
+ 
      const getvideos = await Video.aggregate([
          {
              $match: {
@@ -52,7 +52,7 @@ const getAllVideos = asynchandler(async (req, res) => {
  
      ])
  
-   } catch (error) {
+      if (!getvideos) {
     throw ApiError("Error while geting all videos",error)
    }
     const Allvideos = await Video.aggregatePaginate(getvideos)

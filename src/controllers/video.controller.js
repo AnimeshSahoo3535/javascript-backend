@@ -12,49 +12,49 @@ const getAllVideos = asynchandler(async (req, res) => {
     //TODO: get all videos based on query, sort, pagination
 
     const offset = (page - 1) * limit;
- 
-     const getvideos = await Video.aggregate([
-         {
-             $match: {
-                 _id: new mongoose.Types.ObjectId(userId)
-             }
-         },
-         {
-             $lookup: {
-                 from: "users",
-                 localField: "owner",
-                 foreignField: "_id",
-                 as: "User Detail"
-             },
-             pipeline: [
-                 {
-                     $project: {
-                         username: 1,
-                         avatar: 1,
-                         coverImage: 1,
-                     }
-                 }
-             ]
-         },
-         {
-             $sort: {
-                 [sortBy]: sortType === 'asc' ? 1 : -1
-             }
- 
- 
-         },
-         {
-             $skip: offset
-         },
-         {
-             $limit: limit
-         }
- 
-     ])
- 
-      if (!getvideos) {
-    throw ApiError("Error while geting all videos",error)
-   }
+
+    const getvideos = await Video.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(userId)
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "User Detail"
+            },
+            pipeline: [
+                {
+                    $project: {
+                        username: 1,
+                        avatar: 1,
+                        coverImage: 1,
+                    }
+                }
+            ]
+        },
+        {
+            $sort: {
+                [sortBy]: sortType === 'asc' ? 1 : -1
+            }
+
+
+        },
+        {
+            $skip: offset
+        },
+        {
+            $limit: limit
+        }
+
+    ])
+
+    if (!getvideos) {
+        throw ApiError("Error while geting all videos", error)
+    }
     const Allvideos = await Video.aggregatePaginate(getvideos)
     res.status(200).json(new ApiResponse(
         200,
@@ -66,7 +66,33 @@ const getAllVideos = asynchandler(async (req, res) => {
 
 const publishAVideo = asynchandler(async (req, res) => {
     const { title, description } = req.body
-    // TODO: get video, upload to cloudinary, create video
+    // TODO: get video, upload to cloudinary, create video 
+
+    if (!title || !description) {
+        throw new ApiError("Title and Description are required.")
+    }
+
+    if (!isPublished) {
+
+        const video = req.videoFile;
+        if (!video) {
+            throw new ApiError("videoFile is Missing")
+        }
+        const videofile = await uploadOnCloudinary(video);
+
+        if (!videofile) {
+            throw new ApiError("Error while uploading file to cloudinary")
+        }
+    }
+
+    res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            { title, description },
+            "VideoFile is published"
+        ))
+
 })
 
 const getVideoById = asynchandler(async (req, res) => {

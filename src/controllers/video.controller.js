@@ -71,6 +71,8 @@ const publishAVideo = asynchandler(async (req, res) => {
     if (!title || !description) {
         throw new ApiError("Title and Description are required.")
     }
+    const isPublished = req.isPublished;
+
 
     if (!isPublished) {
 
@@ -85,6 +87,7 @@ const publishAVideo = asynchandler(async (req, res) => {
         }
     }
 
+
     res
         .status(200)
         .json(new ApiResponse(
@@ -97,6 +100,21 @@ const publishAVideo = asynchandler(async (req, res) => {
 
 const getVideoById = asynchandler(async (req, res) => {
     const { videoId } = req.params
+
+    const video = await Video.findById(req.videoFile?.videoId)
+
+    if (!video) {
+        throw new ApiError("Not able to get the video")
+    }
+    
+    return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            req.videoFile,
+            "Video is Fetched"
+        ))
+
     //TODO: get video by id
 })
 

@@ -106,7 +106,7 @@ const getVideoById = asynchandler(async (req, res) => {
     if (!video) {
         throw new ApiError("Not able to get the video")
     }
-    
+
     return res
         .status(200)
         .json(new ApiResponse(
@@ -122,11 +122,37 @@ const updateVideo = asynchandler(async (req, res) => {
     const { videoId } = req.params
     //TODO: update video details like title, description, thumbnail
 
+    const {title,description,thumbnail}=req.body;
+
+    const video=await Video.findByIdAndUpdate(
+        videoId,
+        {
+            $set:{
+               title:title,
+               description:description,
+               thumbnail:thumbnail
+            }
+        }
+    ,
+    {
+        new:true
+    }
+    )
+    if(!video){
+        throw new ApiError("Unable to update the video")
+    }
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, video, "video is  updated successfully")
+        )
 })
 
 const deleteVideo = asynchandler(async (req, res) => {
     const { videoId } = req.params
     //TODO: delete video
+
+    
 })
 
 const togglePublishStatus = asynchandler(async (req, res) => {
